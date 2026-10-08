@@ -2,9 +2,10 @@
   "name": "apigateway_microservice",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "api-gateway.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node api-gateway.js"
   },
   "keywords": [],
   "author": "",

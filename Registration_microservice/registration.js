@@ -29,7 +29,7 @@ function uniqueid(min, max) {
 }
 
 //REG API
-app.post('/reg', async (req, res) => {
+app.post('/register', async (req, res) => {
   console.log("REG API EXECUTED");
   
   try {
