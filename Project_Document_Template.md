@@ -4,16 +4,15 @@
 ## 1. Architecture
 | Microservice Name | Internal Port | Exposed URL (via Load Balancer) | API Names / Routes |
 |-------------------|---------------|---------------------------------|--------------------|
-| **API Gateway**   | 4000 (Internal) | `http://<EC2-IP>/...` | Routes all traffic & Auth |
-| **Registration**  | 5001 | `http://<EC2-IP>/register` | `POST /register` |
-| **Login**         | 5002 | `http://<EC2-IP>/login` | `POST /login` |
-| **Catalog**       | 5003 | `http://<EC2-IP>/products` | `POST /products`<br>`GET /products/:id`<br>`PUT /products/:id` |
-| **Inventory**     | 5004 | `http://<EC2-IP>/inventory/:sku` | `GET /inventory/:sku`<br>`PUT /inventory/:sku/adjust` |
-| **Order**         | 5005 | `http://<EC2-IP>/orders` | `POST /orders`<br>`GET /orders/pending`<br>`PUT /orders/:id/status` |
-| **Inbound**       | 5006 | `http://<EC2-IP>/shipments` | `POST /shipments`<br>`PUT /shipments/:id/verify` |
-| **User Profile**  | 5007 | `http://<EC2-IP>/viewprofile` | `GET /viewprofile`<br>`PUT /updateprofile` |
+| **API Gateway**   | 4000-4002 | `http://<EC2-IP>:4000/...` | Routes all traffic & Auth |
+| **Registration**  | 5001 | `http://<EC2-IP>:8080/register` | `POST /register` |
+| **Login**         | 5002 | `http://<EC2-IP>:8080/login` | `POST /login` |
+| **Catalog**       | 5003 | `http://<EC2-IP>:8080/products` | `POST /products`<br>`GET /products/:id`<br>`PUT /products/:id` |
+| **Inventory**     | 5004 | `http://<EC2-IP>:8080/inventory/:sku` | `GET /inventory/:sku`<br>`PUT /inventory/:sku/adjust` |
+| **Order**         | 5005 | `http://<EC2-IP>:8080/orders` | `POST /orders`<br>`GET /orders/pending`<br>`PUT /orders/:id/status` |
+| **Inbound**       | 5006 | `http://<EC2-IP>:8080/shipments` | `POST /shipments`<br>`PUT /shipments/:id/verify` |
 
-*Note: Nginx Load Balancer is exposed on Port 80. All traffic enters via Port 80 and is balanced across API Gateway instances.*
+*Note: Nginx Load Balancer is exposed on Port 8080. All traffic enters via Port 8080 and is balanced across API Gateway instances (which run on Ports 4000-4002).*
 
 ---
 

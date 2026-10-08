@@ -14,4 +14,4 @@ const PersonSchema = schema_mongoose.Schema(
     }
     );
 
-module.exports = schema_mongoose.model('person_collection', PersonSchema);
+module.exports = schema_mongoose.model('members', PersonSchema);

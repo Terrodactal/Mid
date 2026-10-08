@@ -5,7 +5,7 @@ services:
     image: nginx:latest
     container_name: load_balancer
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - ./Nginx_LoadBalancer/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
@@ -16,18 +16,17 @@ services:
       context: ./APIGateway_microservice
       dockerfile: Dockerfile
     restart: unless-stopped
-    expose:
-      - "4000"
+    ports:
+      - "4000-4002:4000"
     environment:
       NODE_ENV: production
       PORT: 4000
       REGISTRATION_URL: http://registration-service:5001
       LOGIN_URL: http://login-service:5002
       ORDER_URL: http://order-service:5005
-      TRACKING_URL: http://inventory-service:5004
+      TRACKING_URL: http://tracking-service:5004
       PRODUCT_URL: http://catalog-service:5003
       INBOUND_URL: http://inbound-service:5006
-      USER_URL: http://tracking-service:5007
 
   login-service:
     container_name: login_microservice
@@ -65,18 +64,6 @@ services:
       NODE_ENV: production
       PORT: 5003
 
-  inventory-service:
-    container_name: inventory_microservice
-    build:
-      context: ./Inventory_microservice
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    ports:
-      - "5004:5004"
-    environment:
-      NODE_ENV: production
-      PORT: 5004
-
   order-service:
     container_name: order_microservice
     build:
@@ -108,7 +95,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "5007:5007"
+      - "5004:5004"
     environment:
       NODE_ENV: production
-      PORT: 5007
+      PORT: 5004

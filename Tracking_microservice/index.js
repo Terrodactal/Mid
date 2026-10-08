@@ -1,68 +1,61 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt'); // 1. Added bcrypt to hash the password
-require('dotenv').config();
+const mongoose = require('mongoose'); // Needed for MongoDB operations
+require('dotenv').config(); // Needed to load your MONGO_URI
 
 const app = express();
-app.use(express.json()); 
+app.use(express.json()); // Essential: Allows your app to read JSON from Postman
 
-// Connect to MongoDB
+// 1. Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('User Service Connected to MongoDB'))
-    .catch(err => console.error('MongoDB connection error:', err));
+  .then(() => console.log('Inventory Tracking Service Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
-// 2. Define the User Schema (Added 'mobile' so Mongoose stops blocking it)
-const userSchema = new mongoose.Schema({
-    emailid: { type: String, required: true },
-    pass: { type: String, required: true }, 
-    role: { type: String, required: true },
-    mobile: { type: String } // Added this line! (String is best for phone numbers)
+// 2. Define the Inventory Schema (matching your DB)
+const inventorySchema = new mongoose.Schema({
+  sku: { type: String, required: true, unique: true },
+  quantity: { type: Number, required: true, default: 0 }
 });
-const User = mongoose.model('User', userSchema, 'person_collections');
+// Maps directly to the 'Inventory' collection in MongoDB
+const Inventory = mongoose.model('Inventory', inventorySchema, 'Inventory');
 
 // --- APIs ---
 
-// VIEW PROFILE API - GET /user/viewprofile
-app.get('/viewprofile', async (req, res) => {
-    try {
-        const user = await User.findOne({ emailid: req.body.emailid });
-        
-        if (!user) {
-            return res.status(404).json({ message: "User Not Found" });
-        }
-        res.status(200).json(user);
-    } catch (error) {
-        console.error("[VIEW PROFILE ERROR]", error);
-        res.status(500).json({ error: "Server Error" });
+// READ API - GET /inventory/:sku (Manager & Worker)
+app.get('/inventory/:sku', async (req, res) => {
+  try {
+    // Queries the database for current stock levels using the SKU provided in the URL
+    const item = await Inventory.findOne({ sku: req.params.sku });
+    
+    if (!item) {
+      return res.status(404).json({ message: "Inventory Item Not Found" });
     }
+    res.status(200).json(item);
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
 });
 
-// UPDATE PROFILE API - PUT /user/updateprofile
-app.put('/updateprofile', async (req, res) => {
-    try {
-        // 3. Check if the user included a new password in the request body
-        // If they did, hash it and replace the plain-text one before saving
-        if (req.body.pass) {
-            req.body.pass = await bcrypt.hash(req.body.pass, 10);
-        }
+// ADJUST API - PUT /inventory/:sku/adjust (Worker only)
+app.put('/inventory/:sku/adjust', async (req, res) => {
+  try {
+    // Finds the exact inventory record by SKU and updates its quantity in one step
+    const updatedInventory = await Inventory.findOneAndUpdate(
+      { sku: req.params.sku }, 
+      { quantity: req.body.quantity }, // Expects a new 'quantity' value in Postman's JSON body
+      { new: true } // Returns the updated document
+    );
 
-        const updatedUser = await User.findOneAndUpdate(
-            { emailid: req.body.emailid }, 
-            req.body, 
-            { new: true }
-        );
-        
-        if (!updatedUser) {
-            return res.status(404).json({ message: "User Not Found to Update" });
-        }
-        res.status(200).json({ message: "Profile successfully updated", user: updatedUser });
-    } catch (error) {
-        console.error("[UPDATE PROFILE ERROR]", error);
-        res.status(500).json({ error: "Server Error" });
+    if (!updatedInventory) {
+      return res.status(404).json({ message: "Inventory Item Not Found to Adjust" });
     }
+    res.status(200).json({ message: "Stock successfully adjusted", inventory: updatedInventory });
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
 });
 
-// START THE EXPRESS SERVER. 
-app.listen(5007, () => {
-    console.log('User Microservice Started at Port No: 5007');
-});
+// START THE EXPRESS SERVER.
+const PORT = process.env.PORT || 5004;
+app.listen(PORT, () => 
+  console.log('EXPRESS Server Started at Port No: 5004')
+);
