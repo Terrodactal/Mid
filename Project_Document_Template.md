@@ -11,6 +11,7 @@
 | **Inventory**     | 5004 | `http://<EC2-IP>:8080/inventory/:sku` | `GET /inventory/:sku`<br>`PUT /inventory/:sku/adjust` |
 | **Order**         | 5005 | `http://<EC2-IP>:8080/orders` | `POST /orders`<br>`GET /orders/pending`<br>`PUT /orders/:id/status` |
 | **Inbound**       | 5006 | `http://<EC2-IP>:8080/shipments` | `POST /shipments`<br>`PUT /shipments/:id/verify` |
+| **User Profile**  | 5007 | `http://<EC2-IP>:8080/viewprofile` | `GET /viewprofile`<br>`PUT /updateprofile` |
 
 *Note: Nginx Load Balancer is exposed on Port 8080. All traffic enters via Port 8080 and is balanced across API Gateway instances (which run on Ports 4000-4002).*
 

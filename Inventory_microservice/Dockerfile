@@ -4,6 +4,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev
 COPY . .
-EXPOSE 5005
+EXPOSE 5004
 USER node
 CMD ["npm", "start"]

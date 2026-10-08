@@ -12,6 +12,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // 2. Define the Product Schema (matching your DB)
 const productSchema = new mongoose.Schema({
+  sku: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   description: { type: String, required: true },
   price: { type: Number, required: true },
@@ -28,6 +29,7 @@ app.post('/products', async (req, res) => {
   try {
     // Inserts a new product definition into the database based on Postman's body
     const newProduct = new Product({
+      sku: req.body.sku,
       name: req.body.name,
       description: req.body.description,
       price: req.body.price,
@@ -54,7 +56,8 @@ app.get('/products/:id', async (req, res) => {
     // 2. Make an HTTP call to your Inventory Microservice (Port 5004)
     let availableQuantity = 0;
     try {
-      const inventoryResponse = await fetch(`http://localhost:5004/inventory/${product.sku}`);
+      const trackingUrl = process.env.TRACKING_URL || 'http://localhost:5004';
+      const inventoryResponse = await fetch(`${trackingUrl}/inventory/${product.sku}`);
       if (inventoryResponse.ok) {
         const inventoryData = await inventoryResponse.json();
         availableQuantity = inventoryData.quantity; // Extract the quantity

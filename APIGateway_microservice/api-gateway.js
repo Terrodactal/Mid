@@ -39,9 +39,14 @@ const ORDER_URL = process.env.ORDER_URL || 'http://localhost:5005';
 const TRACKING_URL = process.env.TRACKING_URL || 'http://localhost:5004';
 const PRODUCT_URL = process.env.PRODUCT_URL || 'http://localhost:5003';
 const INBOUND_URL = process.env.INBOUND_URL || 'http://localhost:5006';
+const USER_URL = process.env.USER_URL || 'http://localhost:5007';
 
 // 2. Registration Service
 app.post('/register', (req, res) => proxy.web(req, res, { target: REGISTRATION_URL }));
+
+// User / Tracking profile routes
+app.get('/viewprofile', authToken, (req, res) => proxy.web(req, res, { target: USER_URL }));
+app.put('/updateprofile', authToken, (req, res) => proxy.web(req, res, { target: USER_URL }));
 
 // 3. Login Service
 app.post('/login', (req, res) => proxy.web(req, res, { target: LOGIN_URL }));

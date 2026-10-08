@@ -24,9 +24,10 @@ services:
       REGISTRATION_URL: http://registration-service:5001
       LOGIN_URL: http://login-service:5002
       ORDER_URL: http://order-service:5005
-      TRACKING_URL: http://tracking-service:5004
+      TRACKING_URL: http://inventory-service:5004
       PRODUCT_URL: http://catalog-service:5003
       INBOUND_URL: http://inbound-service:5006
+      USER_URL: http://tracking-service:5007
 
   login-service:
     container_name: login_microservice
@@ -63,6 +64,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 5003
+      TRACKING_URL: http://inventory-service:5004
 
   order-service:
     container_name: order_microservice
@@ -88,10 +90,10 @@ services:
       NODE_ENV: production
       PORT: 5006
 
-  tracking-service:
-    container_name: tracking_microservice
+  inventory-service:
+    container_name: inventory_microservice
     build:
-      context: ./Tracking_microservice
+      context: ./Inventory_microservice
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
@@ -99,3 +101,15 @@ services:
     environment:
       NODE_ENV: production
       PORT: 5004
+
+  tracking-service:
+    container_name: tracking_microservice
+    build:
+      context: ./Tracking_microservice
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5007:5007"
+    environment:
+      NODE_ENV: production
+      PORT: 5007

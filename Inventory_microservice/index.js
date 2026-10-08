@@ -24,10 +24,10 @@ const Inventory = mongoose.model('Inventory', inventorySchema, 'Inventory');
 app.get('/inventory/:sku', async (req, res) => {
   try {
     // Queries the database for current stock levels using the SKU provided in the URL
-    const item = await Inventory.findOne({ sku: req.params.sku });
+    let item = await Inventory.findOne({ sku: req.params.sku });
     
     if (!item) {
-      return res.status(404).json({ message: "Inventory Item Not Found" });
+      item = { sku: req.params.sku, quantity: 0 };
     }
     res.status(200).json(item);
   } catch (error) {
@@ -42,7 +42,7 @@ app.put('/inventory/:sku/adjust', async (req, res) => {
     const updatedInventory = await Inventory.findOneAndUpdate(
       { sku: req.params.sku }, 
       { quantity: req.body.quantity }, // Expects a new 'quantity' value in Postman's JSON body
-      { new: true } // Returns the updated document
+      { new: true, upsert: true } // Returns the updated document, creates if it doesn't exist
     );
 
     if (!updatedInventory) {
