@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  login-service:
+    container_name: login_microservice
+    build:
+      context: ./Login_microservice
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      # Maps local port 5002 to container port 5002
+      - "5002:5002"
+    environment:
+      NODE_ENV: production
+      PORT: 5002
+
+  registration-service:
+    container_name: registration_microservice
+    build:
+      context: ./Registration_microservice
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      # Maps local port 5001 to container port 5001
+      - "5001:5001"
+    environment:
+      NODE_ENV: production
+      PORT: 5001
